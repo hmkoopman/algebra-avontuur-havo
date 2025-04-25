@@ -47,7 +47,7 @@ const Index = () => {
       
       <footer className="mt-12 py-4 border-t border-border">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          © 2025 AlgebraAvontuur - Blauwe Baptist
+          © 2025 AlgebraAvontuur - Blauwe Baptist - KNM
         </div>
       </footer>
     </div>
