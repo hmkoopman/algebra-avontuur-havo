@@ -1,5 +1,4 @@
-
-import { EquationType, Equation } from '../types/equation';
+import { EquationType, Equation, PracticeOptions } from '../types/equation';
 
 // Helper function to format coefficients
 export const formatCoefficient = (coefficient: number, hasX: boolean = true) => {
@@ -102,18 +101,20 @@ export const generateQuadraticTrinomial = (difficulty: number): Equation => {
   };
 };
 
-export const generateNewEquation = (options: { linear: boolean; quadratic: boolean }, difficulty: number): Equation | null => {
+export const generateNewEquation = (options: PracticeOptions, difficulty: number): Equation | null => {
   const availableTypes = [];
   
   if (options.linear) {
     availableTypes.push(EquationType.LINEAR);
   }
-  if (options.quadratic) {
-    availableTypes.push(
-      EquationType.QUADRATIC_SIMPLE,
-      EquationType.QUADRATIC_BINOMIAL,
-      EquationType.QUADRATIC_TRINOMIAL
-    );
+  if (options.quadraticSimple) {
+    availableTypes.push(EquationType.QUADRATIC_SIMPLE);
+  }
+  if (options.quadraticBinomial) {
+    availableTypes.push(EquationType.QUADRATIC_BINOMIAL);
+  }
+  if (options.quadraticTrinomial) {
+    availableTypes.push(EquationType.QUADRATIC_TRINOMIAL);
   }
 
   if (availableTypes.length === 0) return null;
