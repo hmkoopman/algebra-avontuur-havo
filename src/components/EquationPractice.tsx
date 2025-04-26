@@ -7,7 +7,12 @@ import ScoreDisplay from './ScoreDisplay';
 
 const EquationPractice: React.FC = () => {
   const { toast } = useToast();
-  const [options, setOptions] = useState<PracticeOptions>({ linear: true, quadratic: true });
+  const [options, setOptions] = useState<PracticeOptions>({ 
+    linear: true, 
+    quadraticSimple: true,
+    quadraticBinomial: true,
+    quadraticTrinomial: true 
+  });
   const [currentEquation, setCurrentEquation] = useState<Equation | null>(null);
   const [userSolutions, setUserSolutions] = useState<string[]>([]);
   const [numSolutions, setNumSolutions] = useState<string>('');
@@ -26,7 +31,6 @@ const EquationPractice: React.FC = () => {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [attemptCount, setAttemptCount] = useState<number>(0);
 
-  // Handle number of solutions selection
   const handleNumSolutionsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setNumSolutions(e.target.value);
     if (e.target.value) {
@@ -39,14 +43,12 @@ const EquationPractice: React.FC = () => {
     }
   };
 
-  // Handle solution input changes
   const handleSolutionChange = (index: number, value: string) => {
     const newSolutions = [...userSolutions];
     newSolutions[index] = value;
     setUserSolutions(newSolutions);
   };
 
-  // Buy a hint (costs 1 point)
   const buyHint = () => {
     if (!showHint && score.total >= 1) {
       setScore({...score, total: score.total - 1});
@@ -66,12 +68,10 @@ const EquationPractice: React.FC = () => {
     }
   };
 
-  // Check user's answer
   const checkAnswer = () => {
     if (!currentEquation) return;
     setAttemptCount(attemptCount + 1);
 
-    // Check number of solutions
     const expectedNumSolutions = currentEquation.solutions.length;
     const userNumSolutions = parseInt(numSolutions);
     
@@ -85,10 +85,8 @@ const EquationPractice: React.FC = () => {
       return;
     }
     
-    // Check if all solutions are correct (ignoring order)
     const parsedSolutions = userSolutions.map(s => {
       try {
-        // Handle fractions like "1/2"
         if (s.includes('/')) {
           const [numerator, denominator] = s.split('/').map(n => parseFloat(n));
           return numerator / denominator;
@@ -99,7 +97,6 @@ const EquationPractice: React.FC = () => {
       }
     }).filter(s => !isNaN(s)).sort((a, b) => a - b);
     
-    // Sort the expected solutions to allow for different input order
     const sortedExpectedSolutions = [...currentEquation.solutions].sort((a, b) => a - b);
     
     const allCorrect = parsedSolutions.length === sortedExpectedSolutions.length &&
@@ -110,13 +107,11 @@ const EquationPractice: React.FC = () => {
     setIsCorrect(allCorrect);
     
     if (allCorrect) {
-      // Assign points based on the equation type
-      let pointsEarned = 3; // Base points for correct answer
-      if (hintUsed) pointsEarned--; // Deduct 1 point if hint was used
+      let pointsEarned = 3;
+      if (hintUsed) pointsEarned--;
       
       let newScore = {...score, total: score.total + pointsEarned};
       
-      // Update type-specific score
       switch (currentEquation.type) {
         case EquationType.LINEAR:
           newScore.linear += pointsEarned;
@@ -139,7 +134,6 @@ const EquationPractice: React.FC = () => {
         description: `Je hebt ${pointsEarned} punt${pointsEarned !== 1 ? 'en' : ''} verdiend.`,
       });
       
-      // Increase difficulty after several correct answers
       if (difficultyLevel < 5 && score.total % 10 === 0) {
         setDifficultyLevel(prev => prev + 1);
         toast({
@@ -148,12 +142,10 @@ const EquationPractice: React.FC = () => {
         });
       }
       
-      // Generate a new equation after a delay
       setTimeout(() => {
         generateEquation();
       }, 1500);
     } else if (attemptCount >= 2) {
-      // Show correct answer after 2 attempts
       const solutionsText = currentEquation.solutions.map(s => `x = ${s}`).join(' of ');
       toast({
         title: "Probeer opnieuw",

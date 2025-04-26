@@ -8,7 +8,9 @@ export enum EquationType {
 
 export interface PracticeOptions {
   linear: boolean;
-  quadratic: boolean;
+  quadraticSimple: boolean;
+  quadraticBinomial: boolean;
+  quadraticTrinomial: boolean;
 }
 
 export interface Score {

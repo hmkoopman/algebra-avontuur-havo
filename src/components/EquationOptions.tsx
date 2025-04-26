@@ -27,8 +27,8 @@ const EquationOptions: React.FC<EquationOptionsProps> = ({ options, setOptions, 
         <div className="flex items-center space-x-2">
           <Checkbox
             id="quadratic-simple"
-            checked={options.quadratic}
-            onCheckedChange={() => setOptions({...options, quadratic: !options.quadratic})}
+            checked={options.quadraticSimple}
+            onCheckedChange={() => setOptions({...options, quadraticSimple: !options.quadraticSimple})}
           />
           <label htmlFor="quadratic-simple" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             Kwadratisch (x² = c)
@@ -37,8 +37,8 @@ const EquationOptions: React.FC<EquationOptionsProps> = ({ options, setOptions, 
         <div className="flex items-center space-x-2">
           <Checkbox
             id="quadratic-binomial"
-            checked={options.quadratic}
-            onCheckedChange={() => setOptions({...options, quadratic: !options.quadratic})}
+            checked={options.quadraticBinomial}
+            onCheckedChange={() => setOptions({...options, quadraticBinomial: !options.quadraticBinomial})}
           />
           <label htmlFor="quadratic-binomial" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             Kwadratisch (tweetermen)
@@ -47,8 +47,8 @@ const EquationOptions: React.FC<EquationOptionsProps> = ({ options, setOptions, 
         <div className="flex items-center space-x-2">
           <Checkbox
             id="quadratic-trinomial"
-            checked={options.quadratic}
-            onCheckedChange={() => setOptions({...options, quadratic: !options.quadratic})}
+            checked={options.quadraticTrinomial}
+            onCheckedChange={() => setOptions({...options, quadraticTrinomial: !options.quadraticTrinomial})}
           />
           <label htmlFor="quadratic-trinomial" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             Kwadratisch (drietermen)
