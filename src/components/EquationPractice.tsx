@@ -1,34 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { Checkbox } from "@/components/ui/checkbox";
-
-// Equation types
-enum EquationType {
-  LINEAR = 'LINEAR',
-  QUADRATIC_SIMPLE = 'QUADRATIC_SIMPLE', // x² = c
-  QUADRATIC_BINOMIAL = 'QUADRATIC_BINOMIAL', // ax² + bx = 0
-  QUADRATIC_TRINOMIAL = 'QUADRATIC_TRINOMIAL' // ax² + bx + c = 0
-}
-
-interface PracticeOptions {
-  linear: boolean;
-  quadratic: boolean;
-}
-
-interface Score {
-  total: number;
-  linear: number;
-  quadraticSimple: number;
-  quadraticBinomial: number;
-  quadraticTrinomial: number;
-}
-
-interface Equation {
-  type: EquationType;
-  text: string;
-  solutions: number[];
-  hint: string;
-}
+import { EquationType, PracticeOptions, Score, Equation } from '../types/equation';
+import { generateNewEquation } from '../utils/equationGenerator';
+import EquationOptions from './EquationOptions';
+import ScoreDisplay from './ScoreDisplay';
 
 const EquationPractice: React.FC = () => {
   const { toast } = useToast();
@@ -45,120 +20,11 @@ const EquationPractice: React.FC = () => {
     quadraticTrinomial: 0
   });
   const [showDetailedScore, setShowDetailedScore] = useState<boolean>(false);
-  const [difficultyLevel, setDifficultyLevel] = useState<number>(1); // 1 to 5
+  const [difficultyLevel, setDifficultyLevel] = useState<number>(1);
   const [showHint, setShowHint] = useState<boolean>(false);
   const [hintUsed, setHintUsed] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [attemptCount, setAttemptCount] = useState<number>(0);
-
-  // Modify the equation generation functions to format coefficients correctly
-  const formatCoefficient = (coefficient: number, hasX: boolean = true) => {
-    if (coefficient === 0) return '';
-    if (Math.abs(coefficient) === 1) {
-      return coefficient === 1 ? (hasX ? '' : '1') : '-';
-    }
-    return coefficient.toString();
-  };
-
-  const generateLinearEquation = (difficulty: number): Equation => {
-    let a = Math.floor(Math.random() * (difficulty * 2)) + 1;
-    if (Math.random() < 0.5) a *= -1;
-    
-    let solution = Math.floor(Math.random() * (difficulty * 5)) - (difficulty * 2);
-    let b = Math.floor(Math.random() * (difficulty * 3)) + 1;
-    if (Math.random() < 0.5) b *= -1;
-    
-    const c = a * solution + b;
-    
-    const aFormatted = formatCoefficient(a);
-    const equation = `${aFormatted}x ${b >= 0 ? '+' : '-'} ${Math.abs(b)} = ${c}`;
-    const hint = `Breng alle getallen naar de rechter kant en deel vervolgens door ${a}.`;
-    
-    return {
-      type: EquationType.LINEAR,
-      text: equation,
-      solutions: [solution],
-      hint: hint
-    };
-  };
-
-  const generateQuadraticSimple = (difficulty: number): Equation => {
-    let solution = Math.floor(Math.random() * (difficulty * 3)) + 1;
-    if (Math.random() < 0.5) solution *= -1;
-    
-    const c = solution * solution;
-    
-    const equation = `x² = ${c}`;
-    const hint = `Neem de wortel van beide kanten. Let op: er zijn twee mogelijke oplossingen!`;
-    
-    return {
-      type: EquationType.QUADRATIC_SIMPLE,
-      text: equation,
-      solutions: [solution, -solution].sort((a, b) => a - b),
-      hint: hint
-    };
-  };
-
-  const generateQuadraticBinomial = (difficulty: number): Equation => {
-    let a = Math.floor(Math.random() * difficulty) + 1;
-    if (Math.random() < 0.3) a *= -1;
-
-    let solution = Math.floor(Math.random() * (difficulty * 2)) + 1;
-    if (Math.random() < 0.5) solution *= -1;
-    
-    const b = -a * solution;
-    
-    const aFormatted = formatCoefficient(a);
-    const bFormatted = b >= 0 ? `+ ${formatCoefficient(b)}` : `- ${formatCoefficient(Math.abs(b))}`;
-    
-    const equation = `${aFormatted}x² ${bFormatted}x = 0`;
-    const hint = `Haal x buiten haakjes en los dan de twee mogelijke vergelijkingen op.`;
-    
-    return {
-      type: EquationType.QUADRATIC_BINOMIAL,
-      text: equation,
-      solutions: [0, solution].sort((a, b) => a - b),
-      hint: hint
-    };
-  };
-
-  // Generate quadratic equation: ax² + bx + c = 0 using factor method
-  const generateQuadraticTrinomial = (difficulty: number): Equation => {
-    // For these, let's create equations that can be factored easily
-    // We'll pick two solutions and work backwards
-    let r = Math.floor(Math.random() * (difficulty * 2)) + 1;
-    if (Math.random() < 0.5) r *= -1;
-    
-    let s = Math.floor(Math.random() * (difficulty * 2)) + 1;
-    if (Math.random() < 0.5) s *= -1;
-
-    // Make sure they're different
-    while (s === r) {
-      s = Math.floor(Math.random() * (difficulty * 2)) + 1;
-      if (Math.random() < 0.5) s *= -1;
-    }
-    
-    // If solutions are r and s, then the equation is (x-r)(x-s) = 0
-    // Expanded: x² - (r+s)x + rs = 0
-    
-    const a = 1; // Keeping it simple with a=1 for easier factoring
-    const b = -(r + s);
-    const c = r * s;
-    
-    const bSign = b >= 0 ? '+' : '';
-    const cSign = c >= 0 ? '+' : '';
-
-    const equation = `${a === 1 ? '' : a}x² ${bSign} ${b}x ${cSign} ${c} = 0`;
-    
-    const hint = `Zoek twee getallen met als product ${c} en als som ${b}. Gebruik deze om de vergelijking in factoren te ontbinden.`;
-    
-    return {
-      type: EquationType.QUADRATIC_TRINOMIAL,
-      text: equation,
-      solutions: [r, s].sort((a, b) => a - b),
-      hint: hint
-    };
-  };
 
   // Handle number of solutions selection
   const handleNumSolutionsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -284,7 +150,7 @@ const EquationPractice: React.FC = () => {
       
       // Generate a new equation after a delay
       setTimeout(() => {
-        generateNewEquation();
+        generateEquation();
       }, 1500);
     } else if (attemptCount >= 2) {
       // Show correct answer after 2 attempts
@@ -302,96 +168,48 @@ const EquationPractice: React.FC = () => {
     }
   };
 
+  const generateEquation = () => {
+    const newEquation = generateNewEquation(options, difficultyLevel);
+    if (newEquation) {
+      setCurrentEquation(newEquation);
+      setNumSolutions('');
+      setUserSolutions([]);
+      setShowSolutionInputs(false);
+      setShowHint(false);
+      setHintUsed(false);
+      setIsCorrect(null);
+      setAttemptCount(0);
+    } else {
+      toast({
+        title: "Selecteer tenminste één type vergelijking",
+        variant: "destructive",
+      });
+    }
+  };
+
   useEffect(() => {
-    generateNewEquation();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    generateEquation();
   }, []);
 
   return (
     <div className="mt-8">
       <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="flex flex-col space-y-4">
-          <span className="mr-2">Ik wil oefenen met:</span>
-          <div className="flex flex-col space-y-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="linear"
-                checked={options.linear}
-                onCheckedChange={() => setOptions({...options, linear: !options.linear})}
-              />
-              <label htmlFor="linear" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Lineair
-              </label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="quadratic-simple"
-                checked={options.quadratic}
-                onCheckedChange={() => setOptions({...options, quadratic: !options.quadratic})}
-              />
-              <label htmlFor="quadratic-simple" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Kwadratisch (x² = c)
-              </label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="quadratic-binomial"
-                checked={options.quadratic}
-                onCheckedChange={() => setOptions({...options, quadratic: !options.quadratic})}
-              />
-              <label htmlFor="quadratic-binomial" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Kwadratisch (tweetermen)
-              </label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="quadratic-trinomial"
-                checked={options.quadratic}
-                onCheckedChange={() => setOptions({...options, quadratic: !options.quadratic})}
-              />
-              <label htmlFor="quadratic-trinomial" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Kwadratisch (drietermen)
-              </label>
-            </div>
-          </div>
-          
-          <button 
-            onClick={generateNewEquation}
-            className="px-3 py-1 bg-primary text-primary-foreground rounded-md text-sm w-fit"
-          >
-            Start
-          </button>
-        </div>
-
-        <div className="flex items-center ml-auto">
-          <div className="flex items-center space-x-2">
-            <span className="font-medium">Score: {score.total}</span>
-            <button 
-              onClick={() => setShowDetailedScore(!showDetailedScore)}
-              className="px-2 py-1 bg-secondary hover:bg-secondary/80 rounded-md text-xs"
-            >
-              {showDetailedScore ? 'Verberg details' : 'Toon details'}
-            </button>
-          </div>
-        </div>
+        <EquationOptions 
+          options={options}
+          setOptions={setOptions}
+          onStart={generateEquation}
+        />
+        <ScoreDisplay 
+          score={score}
+          showDetailedScore={showDetailedScore}
+          setShowDetailedScore={setShowDetailedScore}
+        />
       </div>
-
-      {showDetailedScore && (
-        <div className="mb-6 p-3 bg-secondary/30 rounded-md text-sm">
-          <h3 className="font-medium mb-1">Score details:</h3>
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <li>Lineair: {score.linear} punten</li>
-            <li>Kwadratisch (x² = c): {score.quadraticSimple} punten</li>
-            <li>Kwadratisch (tweeterm): {score.quadraticBinomial} punten</li>
-            <li>Kwadratisch (drieterm): {score.quadraticTrinomial} punten</li>
-          </ul>
-        </div>
-      )}
 
       {currentEquation && (
         <div className="equation-container">
           <h2 className="text-xl font-medium mb-4">Los deze vergelijking op:</h2>
-          <div className="text-2xl math-formula mb-6 px-4 py-2 bg-background rounded-md inline-block dark:bg-secondary">
+          <div className="text-2xl math-formula mb-6 px-4 py-2 bg-background rounded-md inline-block dark:bg-secondary/80">
             {currentEquation.text}
           </div>
 
@@ -401,7 +219,7 @@ const EquationPractice: React.FC = () => {
               <select
                 value={numSolutions}
                 onChange={handleNumSolutionsChange}
-                className="w-full md:w-48 p-2 border border-input rounded-md bg-background dark:bg-secondary"
+                className="w-full md:w-48 p-2 border border-input rounded-md bg-background dark:bg-secondary/80 text-foreground"
                 disabled={isCorrect !== null}
               >
                 <option value="">Selecteer</option>
@@ -419,7 +237,7 @@ const EquationPractice: React.FC = () => {
                       type="text"
                       value={userSolutions[index]}
                       onChange={(e) => handleSolutionChange(index, e.target.value)}
-                      className="solution-input bg-background dark:bg-secondary"
+                      className="solution-input bg-background dark:bg-secondary/80"
                       placeholder="Vul je antwoord in"
                       disabled={isCorrect === true}
                     />
