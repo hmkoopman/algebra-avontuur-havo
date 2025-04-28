@@ -1,4 +1,3 @@
-
 export enum EquationType {
   LINEAR = 'LINEAR',
   QUADRATIC_SIMPLE = 'QUADRATIC_SIMPLE', // x² = c
@@ -15,10 +14,15 @@ export interface PracticeOptions {
 
 export interface Score {
   total: number;
+  maxTotal: number;
   linear: number;
+  maxLinear: number;
   quadraticSimple: number;
+  maxQuadraticSimple: number;
   quadraticBinomial: number;
+  maxQuadraticBinomial: number;
   quadraticTrinomial: number;
+  maxQuadraticTrinomial: number;
 }
 
 export interface Equation {

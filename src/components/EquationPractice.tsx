@@ -18,11 +18,16 @@ const EquationPractice: React.FC = () => {
   const [numSolutions, setNumSolutions] = useState<string>('');
   const [showSolutionInputs, setShowSolutionInputs] = useState<boolean>(false);
   const [score, setScore] = useState<Score>({ 
-    total: 0, 
-    linear: 0, 
+    total: 0,
+    maxTotal: 0,
+    linear: 0,
+    maxLinear: 0,
     quadraticSimple: 0,
+    maxQuadraticSimple: 0,
     quadraticBinomial: 0,
-    quadraticTrinomial: 0
+    maxQuadraticBinomial: 0,
+    quadraticTrinomial: 0,
+    maxQuadraticTrinomial: 0
   });
   const [showDetailedScore, setShowDetailedScore] = useState<boolean>(false);
   const [difficultyLevel, setDifficultyLevel] = useState<number>(1);
@@ -110,20 +115,26 @@ const EquationPractice: React.FC = () => {
       let pointsEarned = 3;
       if (hintUsed) pointsEarned--;
       
-      let newScore = {...score, total: score.total + pointsEarned};
+      let newScore = {...score};
+      newScore.total += pointsEarned;
+      newScore.maxTotal += 3;
       
       switch (currentEquation.type) {
         case EquationType.LINEAR:
           newScore.linear += pointsEarned;
+          newScore.maxLinear += 3;
           break;
         case EquationType.QUADRATIC_SIMPLE:
           newScore.quadraticSimple += pointsEarned;
+          newScore.maxQuadraticSimple += 3;
           break;
         case EquationType.QUADRATIC_BINOMIAL:
           newScore.quadraticBinomial += pointsEarned;
+          newScore.maxQuadraticBinomial += 3;
           break;
         case EquationType.QUADRATIC_TRINOMIAL:
           newScore.quadraticTrinomial += pointsEarned;
+          newScore.maxQuadraticTrinomial += 3;
           break;
       }
       
