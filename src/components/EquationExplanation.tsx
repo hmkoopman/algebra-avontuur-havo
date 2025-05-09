@@ -48,14 +48,12 @@ const EquationExplanation: React.FC = () => {
             <ol className="list-decimal pl-5 space-y-2">
               <li>Haal alle termen met x naar één kant van het = teken.</li>
               <li>Haal alle getallen naar de andere kant.</li>
-              <li>Deel beide kanten door de coëfficiënt van x.</li>
+              <li>Deel beide kanten door de coëfficiënt van x (het getal dat voor de x staat).</li>
             </ol>
             <div className="mt-3 p-3 bg-secondary/50 rounded-md">
               <p className="mb-2"><b>Voorbeeld:</b> 3x + 5 = 17</p>
-              <p>3x + 5 - 5 = 17 - 5 <span className="text-muted-foreground">(trek 5 af van beide kanten)</span></p>
-              <p>3x = 12 <span className="text-muted-foreground">(vereenvoudig)</span></p>
-              <p>3x ÷ 3 = 12 ÷ 3 <span className="text-muted-foreground">(deel beide kanten door 3)</span></p>
-              <p>x = 4 <span className="text-muted-foreground">(oplossing)</span></p>
+              <p>3x = 12 <span className="text-muted-foreground">(trek 5 af van beide kanten)</span></p>
+              <p>x = 4 <span className="text-muted-foreground">(deel beide kanten door 3)</span></p>
             </div>
           </ExplanationSection>
 
